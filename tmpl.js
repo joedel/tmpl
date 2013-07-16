@@ -14,10 +14,10 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 		function _templateToArray(template, parse) {
 			var chunk = _parseNext(template);
 			if (chunk.length === 3 && chunk instanceof Array) {
-				parse.push(chunk[0],"VAR:"+chunk[1]);
+				parse.push("'" + chunk[0] + "'","+(obj."+chunk[1]+")+");
 				_templateToArray(chunk[2], parse);
 			} else {
-				parse.push(chunk);
+				parse.push("'" + chunk + "'");
 			}
 		}
 
@@ -36,16 +36,8 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 		}
 
 		function _compileFn(parsed, data) {
-			var str = "";
-			for (var i=0; i<parsed.length; i++) {
-				if (parsed[i].substring(0,4) === "VAR:") {
-					str += "+(obj."+parsed[i].slice(4)+")+";
-				} else {
-					str += "'" + parsed[i] + "'";
-				}
-			}
+			var str = parsed.join("");
 			var compiledFn = new Function("obj", "var template="+str+"; return template;")
-			
 			if (data) {
 				return compiledFn(data);
 			} else {
