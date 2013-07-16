@@ -1,5 +1,5 @@
 //for easy web console testing
-this.easyTemplate = "Some <b>words</b> with {{nested.vars}}, this is the {{simple}} case";
+this.easyTemplate = "Some <b>words</b> with {{nested.vars}}, this is the {{simple}} case.";
 this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "zebra"} };
 
 //tmpl(easyTemplate,easyData) returns processed template 
@@ -12,7 +12,7 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 			KEYLEN = 2;
 
 		function _templateToArray(template, parse) {
-			var chunk = _parseChunk(template);
+			var chunk = _parseNext(template);
 			if (chunk.length === 3 && chunk instanceof Array) {
 				parse.push(chunk[0],"VAR:"+chunk[1]);
 				_templateToArray(chunk[2], parse);
@@ -21,7 +21,7 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 			}
 		}
 
-		function _parseChunk(str) {
+		function _parseNext(str) {
 			var parseArr = [];
 			var openIndex = str.search(OPENKEY);
 			var closeIndex = str.search(CLOSEKEY);
@@ -44,7 +44,7 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 					str += "'" + parsed[i] + "'";
 				}
 			}
-			var compiledFn = new Function("obj", "var out="+str+"; return out;")
+			var compiledFn = new Function("obj", "var template="+str+"; return template;")
 			
 			if (data) {
 				return compiledFn(data);
@@ -54,6 +54,7 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 		}
 
 		function create(template, data) {
+			template = template.replace(/(\r\n|\n|\r)/gm,""); //removes newlines
 			var parsed = [];
 			_templateToArray(template, parsed);
 			return _compileFn(parsed, data);

@@ -3,5 +3,19 @@
 <script src="./tmpl.js"></script>
 </head>
 <body>
+
+<script type="template" id="template">
+	<h1>A headline with a {{headline}} variable</h1>
+	<p>Some words that are important or {{something}}</p>
+</script>
+
+<div id="replace"></div>
+
+<script type="text/javascript">
+	var data = {"headline": "replaced","something":"probably not"},
+		template = document.getElementById("template").innerHTML,
+		insertTemplate = document.getElementById("replace");
+	insertTemplate.innerHTML = tmpl(template,data);
+</script>
 </body>
 </html>
