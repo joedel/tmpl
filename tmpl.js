@@ -1,16 +1,18 @@
+//for easy console testing
+this.easyTemplate = "Some <b>words</b> with {{vars}}, this is the {{simple}} case";
+this.easyData =  { "vars": "giraffe", "simple": "elephant" };
+
+//Tmpl.create(easyTemplate,easyData) returns processed template 
+//Tmpl.create(easyTemplate) returns a fn(), you can pass data to
+
 ;(function(exports) {
 	var Tmpl = {
 		OPENKEY: "{{",
 		CLOSEKEY: "}}",
 		KEYLEN: 2,
 		PARSED: [],
-		easyTemplate: "Some <b>words</b> with {{vars}}, this is the {{simple}} case",
-		easyData: {
-		"vars": "giraffe",
-		"simple": "elephant"
-		},
 
-		runner: function(template, data) {
+		create: function(template, data) {
 			var parsed = [];
 			this._templateToArray(template, parsed);
 			return this._compileFunction(parsed, data);
@@ -58,5 +60,3 @@
 	exports.Tmpl = Tmpl;
 
 })(this);
-
-
