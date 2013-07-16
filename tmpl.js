@@ -1,46 +1,41 @@
-//for easy console testing
-this.easyTemplate = "Some <b>words</b> with {{vars}}, this is the {{simple}} case";
-this.easyData =  { "vars": "giraffe", "simple": "elephant" };
+//for easy web console testing
+this.easyTemplate = "Some <b>words</b> with {{nested.vars}}, this is the {{simple}} case";
+this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "zebra"} };
 
-//Tmpl.create(easyTemplate,easyData) returns processed template 
-//Tmpl.create(easyTemplate) returns a fn(), you can pass data to
+//tmpl(easyTemplate,easyData) returns processed template 
+//tmpl(easyTemplate) returns a fn(), you can pass data to
 
 ;(function(exports) {
-	var Tmpl = {
-		OPENKEY: "{{",
-		CLOSEKEY: "}}",
-		KEYLEN: 2,
-		PARSED: [],
+	var tmpl = function() {
+		var OPENKEY = "{{",
+			CLOSEKEY = "}}",
+			KEYLEN = 2;
 
-		create: function(template, data) {
-			var parsed = [];
-			this._templateToArray(template, parsed);
-			return this._compileFunction(parsed, data);
-		},
-
-		_templateToArray: function(template, parseArray) {
-			var chunk = this._parseChunk(template);
+		function _templateToArray(template, parse) {
+			var chunk = _parseChunk(template);
 			if (chunk.length === 3 && chunk instanceof Array) {
-				parseArray.push(chunk[0],"VAR:"+chunk[1]);
-				this._templateToArray(chunk[2], parseArray);
+				parse.push(chunk[0],"VAR:"+chunk[1]);
+				_templateToArray(chunk[2], parse);
 			} else {
-				parseArray.push(chunk);
+				parse.push(chunk);
 			}
-		},
-		_parseChunk: function(str) {
+		}
+
+		function _parseChunk(str) {
 			var parseArr = [];
-			var openIndex = str.search(this.OPENKEY);
-			var closeIndex = str.search(this.CLOSEKEY);
+			var openIndex = str.search(OPENKEY);
+			var closeIndex = str.search(CLOSEKEY);
 			if (openIndex !== -1 && closeIndex !== -1) {
-				parseArr.push(str.substring(0,openIndex));
-				parseArr.push(str.slice(openIndex + this.KEYLEN, closeIndex));
-				parseArr.push(str.slice(closeIndex + this.KEYLEN));
+				parseArr.push(str.substring(0,openIndex)); //str before open tag
+				parseArr.push(str.slice(openIndex + KEYLEN, closeIndex)); //var
+				parseArr.push(str.slice(closeIndex + KEYLEN)); //remainder
 				return parseArr;
 			} else {
-				return str;
+				return str; //could not find open and closing tags
 			}
-		},
-		_compileFunction: function(parsed, data) {
+		}
+
+		function _compileFn(parsed, data) {
 			var str = "";
 			for (var i=0; i<parsed.length; i++) {
 				if (parsed[i].substring(0,4) === "VAR:") {
@@ -50,13 +45,22 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant" };
 				}
 			}
 			var compiledFn = new Function("obj", "var out="+str+"; return out;")
+			
 			if (data) {
 				return compiledFn(data);
 			} else {
 				return compiledFn;	
 			}
 		}
+
+		function create(template, data) {
+			var parsed = [];
+			_templateToArray(template, parsed);
+			return _compileFn(parsed, data);
+		}
+
+		return {create: create}
 	}
-	exports.Tmpl = Tmpl;
+	exports.tmpl = tmpl().create;
 
 })(this);
