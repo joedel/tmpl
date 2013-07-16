@@ -8,8 +8,8 @@ this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "
 ;(function(exports) {
 	var tmpl = function() {
 		var OPENKEY = "{{",
-			CLOSEKEY = "}}",
-			KEYLEN = 2;
+		    CLOSEKEY = "}}",
+		    KEYLEN = 2;
 
 		function _templateToArray(template, parse) {
 			var chunk = _parseNext(template);
