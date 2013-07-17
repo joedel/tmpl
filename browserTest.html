@@ -5,7 +5,7 @@
 <body>
 
 <script type="template" id="template">
-	<h1>A headline with a {{headline}} variable</h1>
+	<h1>A header with a {{headline}} variable</h1>
 	<p>Some words that are important or {{something}}</p>
 </script>
 
@@ -15,6 +15,7 @@
 	var data = {"headline": "replaced","something":"probably not"},
 		template = document.getElementById("template").innerHTML,
 		insertTemplate = document.getElementById("replace");
+		
 	insertTemplate.innerHTML = tmpl(template,data);
 </script>
 </body>
