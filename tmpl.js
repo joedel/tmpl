@@ -14,7 +14,7 @@
 			var parse = parse || [];
 			var chunk = _parseNext(template);
 			if (chunk.length === 3 && chunk instanceof Array) {
-				parse.push(_strToString(chunk[0]),_varToString("obj", chunk[1]));
+				parse.push(_strToString(chunk[0]),_varToString("data", chunk[1]));
 				parse = _templateToArray(chunk[2], parse);
 			} else {
 				parse.push(_strToString(chunk));
@@ -47,7 +47,7 @@
 
 		function _compileFn(parsed, data) {
 			var str = parsed.join("");
-			var compiledFn = new Function("obj", "var template="+str+"; return template;")
+			var compiledFn = new Function("data", "var template="+str+"; return template;")
 			if (data) {
 				return compiledFn(data);
 			} else {
