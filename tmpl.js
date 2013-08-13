@@ -1,36 +1,31 @@
-//for easy web console testing
-// this.easyTemplate = "Some <b>words</b> with {{nested.vars}}, this is the {{simple}} case.";
-// this.easyData =  { "vars": "giraffe", "simple": "elephant", "nested": {"vars": "zebra"} };
-//tmpl(easyTemplate,easyData) returns processed template 
-//tmpl(easyTemplate) returns a fn(), you can pass data to
-
 ;(function(exports) {
 	var tmpl = function() {
 		var OPENKEY = "{{",
-		    CLOSEKEY = "}}",
-		    KEYLEN = 2;
+			CLOSEKEY = "}}",
+			KEYLEN = 2;
 
-		function _templateToArray(template, parse) {
-			var parse = parse || [];
-			var chunk = _parseNext(template);
+		function templateToArray(template, parse) {
+			var parse = parse || [],
+				chunk = parseNext(template);
+			
 			if (chunk.length === 3 && chunk instanceof Array) {
-				parse.push(_strToString(chunk[0]),_varToString("data", chunk[1]));
-				parse = _templateToArray(chunk[2], parse);
+				parse.push(strToString(chunk[0]),varToString("data", chunk[1]));
+				parse = templateToArray(chunk[2], parse);
 			} else {
-				parse.push(_strToString(chunk));
+				parse.push(strToString(chunk));
 			}
 			return parse;
 		}
 
-		function _varToString(obj, str) {
+		function varToString(obj, str) {
 			return "+("+ obj + "." + str + ")+";
 		}
 
-		function _strToString(str) {
+		function strToString(str) {
 			return "'" + str + "'";
 		}
 
-		function _parseNext(str) {
+		function parseNext(str) {
 			var parseArr = [],
 				openIndex = str.search(OPENKEY),
 				closeIndex = str.search(CLOSEKEY);
@@ -45,9 +40,10 @@
 			}
 		}
 
-		function _compileFn(parsed, data) {
-			var str = parsed.join("");
-			var compiledFn = new Function("data", "var template="+str+"; return template;")
+		function compileFn(parsed, data) {
+			var str = parsed.join(""),
+				compiledFn = new Function("data", "var template="+str+"; return template;");
+			
 			if (data) {
 				return compiledFn(data);
 			} else {
@@ -56,12 +52,13 @@
 		}
 
 		function create(template, data) {
-			var template = template.replace(/(\r\n|\n|\r)/gm,""); //removes newlines
-      		var parsed = _templateToArray(template);
-			return _compileFn(parsed, data);
+			var template = template.replace(/(\r\n|\n|\r)/gm,""), //removes newlines
+				parsed = templateToArray(template);
+
+			return compileFn(parsed, data);
 		}
 		return create;
-	}
+	};
 
 	exports.tmpl = tmpl();
 
