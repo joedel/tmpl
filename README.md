@@ -7,7 +7,7 @@ Returns a function that expects a data object:
 
     tmpl(template);
 
-Returns the 'processed' template:
+Returns the rendered template:
 
     tmpl(template, dataObject);
 
