@@ -1,0 +1,14 @@
+{
+  "name": "js-templates",
+  "version": "0.0.1",
+  "author": "Joe Del",
+  "description": "a simple templating utility for node or browser",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joedel/tmpl.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "expect.js": "~0.2.0"
+  }
+}
