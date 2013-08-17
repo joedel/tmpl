@@ -1,64 +1,68 @@
 ;(function(exports) {
-	var tmpl = function() {
-		var OPENKEY = "{{",
-			CLOSEKEY = "}}",
-			KEYLEN = 2;
+  var tmpl = function() {
+    var openKey = "{{",
+        closeKey = "}}",
+        keyLen = 2;
 
-		function templateToArray(template, parse) {
-			var parse = parse || [],
-				chunk = parseNext(template);
-			
+    function templateToArray(template, parse) {
+      var chunk = parseNext(template);
+      parse = parse || [];
+      
 			if (chunk.length === 3 && chunk instanceof Array) {
-				parse.push(strToString(chunk[0]),varToString("data", chunk[1]));
-				parse = templateToArray(chunk[2], parse);
-			} else {
-				parse.push(strToString(chunk));
-			}
-			return parse;
-		}
+        parse.push(strToString(chunk[0]),varToString("data", chunk[1]));
+        templateToArray(chunk[2], parse);
+      } else {
+        parse.push(strToString(chunk));
+      }
 
-		function varToString(obj, str) {
-			return "+("+ obj + "." + str + ")+";
-		}
+      return parse;
+    }
 
-		function strToString(str) {
-			return "'" + str + "'";
-		}
+    function varToString(obj, str) {
+      return "+("+ obj + "." + str + ")+";
+    }
 
-		function parseNext(str) {
-			var parseArr = [],
-				openIndex = str.search(OPENKEY),
-				closeIndex = str.search(CLOSEKEY);
+    function strToString(str) {
+      return "'" + str + "'";
+    }
 
-			if (openIndex !== -1 && closeIndex !== -1) {
-				parseArr.push(str.substring(0,openIndex)); //str before open tag
-				parseArr.push(str.slice(openIndex + KEYLEN, closeIndex)); //var
-				parseArr.push(str.slice(closeIndex + KEYLEN)); //remainder
-				return parseArr;
-			} else {
-				return str; //could not find open and closing tags
-			}
-		}
+    function parseNext(str) {
+      var parseArr = [],
+          openIndex = str.search(openKey),
+          closeIndex = str.search(closeKey);
 
-		function compileFn(parsed, data) {
-			var str = parsed.join(""),
-				compiledFn = new Function("data", "var template="+str+"; return template;");
-			
-			if (data) {
-				return compiledFn(data);
-			} else {
-				return compiledFn;
-			}
-		}
+      if (openIndex !== -1 && closeIndex !== -1) {
+        parseArr.push(str.substring(0,openIndex));
+        parseArr.push(str.slice(openIndex + keyLen, closeIndex));
+        parseArr.push(str.slice(closeIndex + keyLen));
+        
+        return parseArr;
 
-		function create(template, data) {
-			var template = template.replace(/(\r\n|\n|\r)/gm,""), //removes newlines
-				parsed = templateToArray(template);
+      } else {
+        //No matches
+        return str;
+      }
+    }
 
-			return compileFn(parsed, data);
-		}
-		return create;
-	};
+    function compileFn(parsed, data) {
+      var str = parsed.join(""),
+          compiledFn = new Function("data", "var template="+str+"; return template;");
+
+      if (data) {
+        return compiledFn(data);
+      } else {
+        return compiledFn;
+      }
+    }
+
+    function create(template, data) {
+      template = template.replace(/(\r\n|\n|\r)/gm,""); //remove newlines
+      var parsed = templateToArray(template);
+
+      return compileFn(parsed, data);
+    }
+    return create;
+  };
 
 	exports.tmpl = tmpl();
 
