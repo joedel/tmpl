@@ -7,8 +7,8 @@
     function templateToArray(template, parse) {
       var chunk = parseNext(template);
       parse = parse || [];
-      
-			if (chunk.length === 3 && chunk instanceof Array) {
+
+      if (chunk.length === 3 && chunk instanceof Array) {
         parse.push(strToString(chunk[0]),varToString("data", chunk[1]));
         templateToArray(chunk[2], parse);
       } else {
